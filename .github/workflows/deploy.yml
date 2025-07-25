@@ -17,15 +17,17 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-
             echo "[INFO] Stopping and removing running container (if exists)..."
             docker rm -f codeboxes-server || true
 
             echo "[INFO] Pruning unused Docker networks..."
             docker network prune -f
-            
+
             echo "[INFO] Waiting for port 8080 to be released..."
-            sleep 5
+            while lsof -i :8080 >/dev/null 2>&1; do
+              echo "[INFO] Port 8080 still in use. Waiting..."
+              sleep 2
+            done
 
             echo "[INFO] Cloning latest code..."
             rm -rf codeboxes-server
