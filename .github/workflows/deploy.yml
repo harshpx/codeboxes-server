@@ -17,6 +17,9 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "[INFO] Freeing up port 8080 if occupied..."
+            fuser -k 8080/tcp || true
+
             echo "[INFO] Stopping and removing old container (if exists)..."
             docker rm -f codeboxes-server || true
 
