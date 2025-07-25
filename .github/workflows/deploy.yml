@@ -32,13 +32,13 @@ jobs:
             git clone https://github.com/harshpx/codeboxes-server.git
             cd codeboxes-server
 
-            echo "[INFO] Building code-runner..."
-            cd code-runner
-            docker build -t code-runner .
-
             echo "[INFO] Building codeboxes-server..."
-            cd ../server
+            cd server
             docker build -t codeboxes-server .
+
+            echo "[INFO] Building code-runner..."
+            cd ../code-runner
+            docker build -t code-runner .
 
             echo "[INFO] Starting updated codeboxes-server container..."
             docker run -d --name codeboxes-server \
