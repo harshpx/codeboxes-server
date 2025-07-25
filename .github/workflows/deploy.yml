@@ -21,26 +21,26 @@ jobs:
             # This command will stop and remove all containers, remove all networks,
             # remove all images (including those not associated with a container),
             # and remove all build cache. Use with caution as it's destructive.
-            docker system prune --all --force
+            docker stop codeboxes-server || true
+            docker rm -f codeboxes-server || true
 
             sleep 5
 
-            echo "[INFO] Killing any process explicitly using port 8080 (as a fallback)..."
-            # Use 'lsof' which is generally more reliable and available on Ubuntu
-            if command -v lsof >/dev/null 2>&1; then
-              sudo lsof -t -i:8080 | xargs -r kill -9 || true
-            else
-              # Fallback for systems without lsof, though Ubuntu usually has it
-              if command -v fuser >/dev/null 2>&1; then
-                fuser -k 8080/tcp || true
-              else
-                # Install psmisc if fuser is not found (for Alpine-like systems, less common on Ubuntu)
-                sudo apt-get update && sudo apt-get install -y psmisc || true
-                fuser -k 8080/tcp || true
-              fi
-            fi
-
-            sleep 5
+            # echo "[INFO] Killing any process explicitly using port 8080 (as a fallback)..."
+            # # Use 'lsof' which is generally more reliable and available on Ubuntu
+            # if command -v lsof >/dev/null 2>&1; then
+            #   sudo lsof -t -i:8080 | xargs -r kill -9 || true
+            # else
+            #   # Fallback for systems without lsof, though Ubuntu usually has it
+            #   if command -v fuser >/dev/null 2>&1; then
+            #     fuser -k 8080/tcp || true
+            #   else
+            #     # Install psmisc if fuser is not found (for Alpine-like systems, less common on Ubuntu)
+            #     sudo apt-get update && sudo apt-get install -y psmisc || true
+            #     fuser -k 8080/tcp || true
+            #   fi
+            # fi
+            # sleep 5
 
             echo "[INFO] Cloning latest code..."
             rm -rf codeboxes-server
