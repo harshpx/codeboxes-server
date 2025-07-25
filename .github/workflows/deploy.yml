@@ -55,7 +55,6 @@ jobs:
 
             echo "[INFO] Starting updated codeboxes-server container..."
             docker run -d --name codeboxes-server \
-              --restart unless-stopped \
               -v /var/run/docker.sock:/var/run/docker.sock \
               -p 8080:8080 codeboxes-server
 
