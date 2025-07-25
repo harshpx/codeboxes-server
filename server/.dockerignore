@@ -1,0 +1,19 @@
+# Maven build directory
+target/
+
+# VS Code
+.vscode/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Logs
+*.log
+*.out

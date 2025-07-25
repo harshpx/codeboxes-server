@@ -41,8 +41,6 @@
 ### -------------------- Using Alpine image --------------------###
 # Use Alpine as base
 FROM alpine:3.20
-
-# Install packages
 RUN apk add --no-cache \
     bash \
     openjdk17 \
@@ -55,18 +53,8 @@ RUN apk add --no-cache \
     libstdc++ \
     coreutils \
     ca-certificates
-
-# clean up unnecessary files
 RUN rm -rf /var/cache/apk/* /usr/share/man /usr/share/doc /tmp/*
-
-# Set working directory
 WORKDIR /app
-
-# Copy all script files
 COPY entrypoint.sh run-js.js run-py.py run-java.sh run-cpp.sh run-c.sh run-go.sh /app/
-
-# Make scripts executable
 RUN chmod +x /app/entrypoint.sh /app/run-js.js /app/run-py.py /app/run-java.sh /app/run-cpp.sh /app/run-c.sh /app/run-go.sh
-
-# Use entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
