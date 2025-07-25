@@ -18,17 +18,27 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "[INFO] Stopping and removing running container (if exists)..."
+            docker stop codeboxes-server || true
             docker rm -f codeboxes-server || true
 
-            echo "[INFO] Killing any process using port 8080..."
-            if command -v fuser >/dev/null 2>&1; then
-              fuser -k 8080/tcp || true
+            echo "[INFO] Killing any process explicitly using port 8080 (as a fallback)..."
+            # Use 'lsof' which is generally more reliable and available on Ubuntu
+            if command -v lsof >/dev/null 2>&1; then
+              sudo lsof -t -i:8080 | xargs -r kill -9 || true
             else
-              apk add --no-cache psmisc && fuser -k 8080/tcp || true
+              # Fallback for systems without lsof, though Ubuntu usually has it
+              if command -v fuser >/dev/null 2>&1; then
+                fuser -k 8080/tcp || true
+              else
+                # Install psmisc if fuser is not found (for Alpine-like systems, less common on Ubuntu)
+                sudo apt-get update && sudo apt-get install -y psmisc || true
+                fuser -k 8080/tcp || true
+              fi
             fi
 
             echo "[INFO] Pruning unused Docker networks..."
             docker network prune -f
+            docker image prune -f
 
             echo "[INFO] Cloning latest code..."
             rm -rf codeboxes-server
@@ -45,5 +55,9 @@ jobs:
 
             echo "[INFO] Starting updated codeboxes-server container..."
             docker run -d --name codeboxes-server \
+              --restart unless-stopped \
               -v /var/run/docker.sock:/var/run/docker.sock \
               -p 8080:8080 codeboxes-server
+
+            echo "[INFO] Deployment complete."
+
