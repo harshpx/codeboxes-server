@@ -17,9 +17,13 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "[INFO] Stopping and removing running container (if exists)..."
-            docker stop codeboxes-server || true
-            docker rm -f codeboxes-server || true
+            echo "[INFO] Performing a full Docker system prune to clear everything..."
+            # This command will stop and remove all containers, remove all networks,
+            # remove all images (including those not associated with a container),
+            # and remove all build cache. Use with caution as it's destructive.
+            docker system prune --all --force
+
+            sleep 5
 
             echo "[INFO] Killing any process explicitly using port 8080 (as a fallback)..."
             # Use 'lsof' which is generally more reliable and available on Ubuntu
@@ -36,9 +40,7 @@ jobs:
               fi
             fi
 
-            echo "[INFO] Pruning unused Docker networks..."
-            docker network prune -f
-            docker image prune -f
+            sleep 5
 
             echo "[INFO] Cloning latest code..."
             rm -rf codeboxes-server
