@@ -3,8 +3,8 @@
 # Fail on any error
 set -e
 
-# Print current language
-echo "Executing for language: $LANGUAGE"
+# # Print current language
+# echo "Executing for language: $LANGUAGE"
 
 # Route based on LANGUAGE
 if [ "$LANGUAGE" = "js" ]; then
