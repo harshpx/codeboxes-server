@@ -17,48 +17,11 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "[INFO] Performing a full Docker system prune to clear everything..."
-            # This command will stop and remove all containers, remove all networks,
-            # remove all images (including those not associated with a container),
-            # and remove all build cache. Use with caution as it's destructive.
-            docker stop codeboxes-server || true
-            docker rm -f codeboxes-server || true
-
-            sleep 5
-
-            # echo "[INFO] Killing any process explicitly using port 8080 (as a fallback)..."
-            # # Use 'lsof' which is generally more reliable and available on Ubuntu
-            # if command -v lsof >/dev/null 2>&1; then
-            #   sudo lsof -t -i:8080 | xargs -r kill -9 || true
-            # else
-            #   # Fallback for systems without lsof, though Ubuntu usually has it
-            #   if command -v fuser >/dev/null 2>&1; then
-            #     fuser -k 8080/tcp || true
-            #   else
-            #     # Install psmisc if fuser is not found (for Alpine-like systems, less common on Ubuntu)
-            #     sudo apt-get update && sudo apt-get install -y psmisc || true
-            #     fuser -k 8080/tcp || true
-            #   fi
-            # fi
-            # sleep 5
-
             echo "[INFO] Cloning latest code..."
             rm -rf codeboxes-server
             git clone https://github.com/harshpx/codeboxes-server.git
             cd codeboxes-server
 
-            echo "[INFO] Building codeboxes-server..."
-            cd server
-            docker build -t codeboxes-server .
-
-            echo "[INFO] Building code-runner..."
-            cd ../code-runner
-            docker build -t code-runner .
-
-            echo "[INFO] Starting updated codeboxes-server container..."
-            docker run -d --name codeboxes-server \
-              -v /var/run/docker.sock:/var/run/docker.sock \
-              -p 8080:8080 codeboxes-server
-
-            echo "[INFO] Deployment complete."
-
+            echo "[INFO] Executing deployment script..."
+            chmod +x ./build-and-run.sh
+            ./build-and-run.sh
