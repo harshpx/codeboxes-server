@@ -1,15 +1,20 @@
 # Codeboxes Server
-A container based code execution server that allows you to run code in various programming languages.
+### A container-based code execution API that allows you to run code in various programming languages.
 
-It is designed to be used with the [Codeboxes](https://www.codeboxes.in) web application, but can also be used independently
+It is designed to be used with the [Codeboxes (https://www.codeboxes.in)](https://www.codeboxes.in) web application, but can also be used independently
 
 Deployed API url: [https://codeboxes.152.42.158.94.nip.io](https://codeboxes.152.42.158.94.nip.io)
 
 * **NOTE:** The deployed API only allows requests from `https://www.codeboxes.in` and `http://localhost:3000` to prevent misuse.
 * Build locally & modify the CORS settings in `server/src/main/java/com/codeboxes/server/Configs/CorsConfig.java` to allow requests from other origins.
 
-## Languages Supported till now
-> **JavaScript, Python, C++ & C, Java, Golang**
+## Supported Languages
+* Java
+* JavaScript 
+* Python
+* C++
+* C
+* Golang
 
 ## API Documentation
 ```
@@ -40,17 +45,17 @@ Response:
     git clone https://github.com/harshpx/codeboxes-server.git
     cd codeboxes-server
     ```
-  * Build a container with name `code-runner` from Dockerfile inside code-runner directory
+  * Build a containers with names `code-runner` &  `codeboxes-server` from Dockerfiles inside respective directories
     ```
     docker build -t code-runner ./code-runner
-    ```
-  * Build a container with name `codeboxes-server` from Dockerfile inside server directory
-    ```
     docker build -t codeboxes-server ./server
     ```
   * Run codeboxes-server container
     ```
-    docker run --name codeboxes-server -v /var/run/docker.sock:/var/run/docker.sock -p 8080:8080 codeboxes-server
+    docker run \
+        --name codeboxes-server \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -p 8080:8080 codeboxes-server
     ```
 * **Windows**
   * Requirements: **Docker Desktop**, **JDK 21**, **Maven**
