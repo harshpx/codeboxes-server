@@ -16,7 +16,6 @@ jobs:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: SECRETS_PROPERTIES
           script: |
             echo "[INFO] Cloning latest code..."
             rm -rf codeboxes-server
@@ -24,8 +23,8 @@ jobs:
             cd codeboxes-server
 
             echo "[INFO] Injecting secrets..."
-            echo "${SECRETS_PROPERTIES}"
-            echo "${SECRETS_PROPERTIES}" > ./server/src/main/resources/secrets.properties
+            echo "${{secrets.SECRETS_PROPERTIES}}"
+            echo "${{secrets.SECRETS_PROPERTIES}}" > ./server/src/main/resources/secrets.properties
 
             echo "[INFO] Executing deployment script..."
             chmod +x ./build-and-run.sh
