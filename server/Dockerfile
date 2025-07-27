@@ -1,8 +1,6 @@
-FROM maven:3.9-eclipse-temurin-21
+FROM maven:3.9-eclipse-temurin-21-alpine
 WORKDIR /app
-RUN apt-get update && \
-    apt-get install -y docker.io && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache docker-cli
 COPY . .
 RUN mvn clean package -DskipTests
 RUN cp target/*.jar app.jar
