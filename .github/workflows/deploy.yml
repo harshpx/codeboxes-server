@@ -23,7 +23,6 @@ jobs:
             cd codeboxes-server
 
             echo "[INFO] Injecting secrets..."
-            echo "${{secrets.SECRETS_PROPERTIES}}"
             echo "${{secrets.SECRETS_PROPERTIES}}" > ./server/src/main/resources/secrets.properties
 
             echo "[INFO] Executing deployment script..."
