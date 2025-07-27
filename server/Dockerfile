@@ -1,4 +1,4 @@
-FROM FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:21-jdk
 WORKDIR /app
 RUN apt-get update && \
     apt-get install -y docker.io && \
