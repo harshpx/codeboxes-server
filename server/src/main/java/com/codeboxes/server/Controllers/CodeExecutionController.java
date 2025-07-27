@@ -24,7 +24,7 @@ public class CodeExecutionController {
 
   @PostMapping
   public ResponseEntity<CommonResponse<CodeExecutionResponse>> executeCode(
-      @RequestBody @Valid CodeExecutionRequest request)
+      @Valid @RequestBody CodeExecutionRequest request)
       throws IOException, InterruptedException {
     CodeExecutionResponse executionResponse = codeExecutionService.executeCode(request);
     CommonResponse<CodeExecutionResponse> response = new CommonResponse<>(executionResponse);
