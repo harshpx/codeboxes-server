@@ -17,6 +17,7 @@ import com.codeboxes.server.DTOs.Auth.AuthenticatedUserResponse;
 import com.codeboxes.server.DTOs.Auth.LoginUserRequest;
 import com.codeboxes.server.DTOs.Auth.PatchUserRequest;
 import com.codeboxes.server.DTOs.Auth.RegisterUserRequest;
+import com.codeboxes.server.Exceptions.EntityNotFoundException;
 import com.codeboxes.server.Repositories.CodeRepository;
 import com.codeboxes.server.Repositories.UserRepository;
 import com.codeboxes.server.Services.SecurityConfigServices.JwtService;
@@ -101,5 +102,17 @@ public class UserService {
   public boolean checkEmailAvailability(String email) {
     Optional<User> user = repository.findByEmail(email);
     return user.isEmpty();
+  }
+
+  public AuthenticatedUserResponse getUserFromToken(String token) {
+    String username = jwtService.extractUsername(token);
+    Optional<User> user = repository.findByUsername(username);
+    if (user.isPresent()) {
+      User foundUser = user.get();
+      return new AuthenticatedUserResponse(foundUser.getId(), foundUser.getUsername(), foundUser.getEmail(),
+          jwtService.generateToken(foundUser));
+    } else {
+      throw new EntityNotFoundException("User not found with username: " + username);
+    }
   }
 }

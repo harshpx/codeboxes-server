@@ -60,6 +60,12 @@ public class UserController {
     throw new IllegalArgumentException("Either username or email must be provided");
   }
 
+  @GetMapping("/{token}")
+  public ResponseEntity<CommonResponse<AuthenticatedUserResponse>> getAuthenticatedUser(@PathVariable String token) {
+    AuthenticatedUserResponse response = service.getUserFromToken(token);
+    return ResponseEntity.ok(new CommonResponse<>(response));
+  }
+
   @PatchMapping("/{userId}")
   public ResponseEntity<CommonResponse<AuthenticatedUserResponse>> patchUpdateUser(
       @RequestBody PatchUserRequest request,

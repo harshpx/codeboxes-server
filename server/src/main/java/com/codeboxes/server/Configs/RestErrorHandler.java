@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.codeboxes.server.DTOs.CommonResponse;
+import com.codeboxes.server.Exceptions.EntityNotFoundException;
 
 @ControllerAdvice
 public class RestErrorHandler {
@@ -22,6 +23,13 @@ public class RestErrorHandler {
     CommonResponse<String> response = new CommonResponse<>(e.getLocalizedMessage(),
         HttpStatus.UNAUTHORIZED.value());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(response);
+  }
+
+  @ExceptionHandler
+  public ResponseEntity<CommonResponse<String>> handleNotFoundException(EntityNotFoundException e) {
+    CommonResponse<String> response = new CommonResponse<>(e.getLocalizedMessage(),
+        HttpStatus.NOT_FOUND.value());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(response);
   }
 
   @ExceptionHandler
