@@ -22,20 +22,20 @@ public class Code {
   private String createdBy;
 
   @NotNull
+  private String title;
+
+  @NotNull
   @NotBlank
   private String code;
 
   @NotNull
   @NotBlank
   private String language;
+
+  @NotNull
   private String input;
 
-  public Code(String createdBy, String code, String language) {
-    this.code = code;
-    this.language = language;
-  }
-
-  public Code(String createdBy, String code, String language, String input) {
+  public Code(String createdBy, String title, String code, String language, String input) {
     this.createdBy = createdBy;
     this.code = code;
     this.language = language;
