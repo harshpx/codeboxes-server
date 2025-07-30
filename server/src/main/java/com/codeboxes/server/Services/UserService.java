@@ -1,6 +1,7 @@
 package com.codeboxes.server.Services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -90,5 +91,15 @@ public class UserService {
     List<Code> codesByUser = codeRepository.findByCreatedBy(existingUser.getId());
     codeRepository.deleteAll(codesByUser);
     repository.delete(existingUser);
+  }
+
+  public boolean checkUsernameAvailability(String username) {
+    Optional<User> user = repository.findByUsername(username);
+    return user.isEmpty();
+  }
+
+  public boolean checkEmailAvailability(String email) {
+    Optional<User> user = repository.findByEmail(email);
+    return user.isEmpty();
   }
 }

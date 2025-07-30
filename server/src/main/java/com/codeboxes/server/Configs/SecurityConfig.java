@@ -29,10 +29,9 @@ public class SecurityConfig {
     return https
         .cors(Customizer.withDefaults())
         .csrf(customizer -> customizer.disable())
-        .authorizeHttpRequests(requests -> requests
-            .requestMatchers("/", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs.yaml",
-                "/api/v1/execute", "/api/v1/users/register", "/api/v1/users/login")
-            .permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests(
+            requests -> requests.requestMatchers(SecurityConstraints.PUBLIC_ENDPOINTS).permitAll().anyRequest()
+                .authenticated())
         .httpBasic(Customizer.withDefaults())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

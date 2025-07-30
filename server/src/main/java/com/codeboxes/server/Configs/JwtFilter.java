@@ -52,7 +52,8 @@ public class JwtFilter extends OncePerRequestFilter {
       if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
         UserDetails userDetails = context.getBean(UserDetailsServiceImpl.class).loadUserByUsername(username);
 
-        // Validate the token and set authentication in the context, throw error if invalid
+        // Validate the token and set authentication in the context, throw error if
+        // invalid
         if (jwtService.validateToken(token, userDetails)) {
           UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
               userDetails, null, userDetails.getAuthorities());
@@ -64,7 +65,7 @@ public class JwtFilter extends OncePerRequestFilter {
       }
       filterChain.doFilter(request, response);
     } catch (ExpiredJwtException e) {
-      CommonResponse<String> errorResponse = new CommonResponse<>("JWT Token is invalid or expired",
+      CommonResponse<String> errorResponse = new CommonResponse<>(e.getLocalizedMessage(),
           HttpStatus.UNAUTHORIZED.value());
       response.setStatus(HttpStatus.UNAUTHORIZED.value());
       response.setContentType("application/json");
