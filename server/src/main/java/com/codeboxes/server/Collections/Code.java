@@ -3,6 +3,8 @@ package com.codeboxes.server.Collections;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.codeboxes.server.DTOs.Code.SaveCodeRequest;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -41,5 +43,14 @@ public class Code {
     this.code = code;
     this.language = language;
     this.input = input;
+  }
+
+  public Code(String createdBy, SaveCodeRequest request) {
+    this.createdBy = createdBy;
+    this.id = request.getId();
+    this.title = request.getTitle();
+    this.code = request.getCode();
+    this.language = request.getLanguage();
+    this.input = request.getInput();
   }
 }

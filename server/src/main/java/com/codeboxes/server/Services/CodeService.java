@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.codeboxes.server.Collections.Code;
 import com.codeboxes.server.Collections.User;
+import com.codeboxes.server.DTOs.Code.SaveCodeRequest;
 import com.codeboxes.server.Exceptions.EntityNotFoundException;
 import com.codeboxes.server.Repositories.CodeRepository;
 import com.codeboxes.server.Repositories.UserRepository;
@@ -39,12 +40,14 @@ public class CodeService {
   }
 
   @Transactional
-  public Code saveCode(Code code) {
-    Optional<User> user = userRepository.findById(code.getCreatedBy());
+  public Code saveCode(SaveCodeRequest request, UserDetailsImpl userDetails) {
+    String userId = userDetails.getUser().getId();
+    Optional<User> user = userRepository.findById(userId);
     if (user.isPresent()) {
+      Code code = new Code(user.get().getId(), request);
       return codeRepository.save(code);
     } else {
-      throw new RuntimeException("User not found with id: " + code.getCreatedBy());
+      throw new RuntimeException("User not found");
     }
   }
 

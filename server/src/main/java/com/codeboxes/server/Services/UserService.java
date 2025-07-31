@@ -68,7 +68,8 @@ public class UserService {
   public AuthenticatedUserResponse patchUpdateUser(PatchUserRequest request, UserDetailsImpl userDetails) {
     String userId = userDetails.getUser().getId();
     User existingUser = repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
-    if (request.getUsername() == null && request.getEmail() == null && request.getPassword() == null) {
+    if (request.getUsername() == null && request.getEmail() == null && request.getDp() == null
+        && request.getPassword() == null) {
       throw new IllegalArgumentException("No fields to update provided");
     }
     if (request.getUsername() != null) {
@@ -76,6 +77,9 @@ public class UserService {
     }
     if (request.getEmail() != null) {
       existingUser.setEmail(request.getEmail());
+    }
+    if (request.getDp() != null) {
+      existingUser.setDp(request.getDp());
     }
     if (request.getPassword() != null) {
       String hashedPassward = new BCryptPasswordEncoder(10).encode(request.getPassword());

@@ -32,9 +32,21 @@ public class User {
   @NotBlank
   private String password;
 
+  @NotNull
+  @NotBlank
+  private String dp;
+
   public User(String username, String email, String password) {
     this.username = username;
     this.email = email;
     this.password = password;
+    this.dp = "https://i.imgur.com/8GO2mo5.png";
+  }
+
+  public User(String username, String email, String password, String dp) {
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.dp = dp;
   }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.codeboxes.server.Collections.Code;
 import com.codeboxes.server.DTOs.CommonResponse;
+import com.codeboxes.server.DTOs.Code.SaveCodeRequest;
 import com.codeboxes.server.Services.CodeService;
 import com.codeboxes.server.Services.SecurityConfigServices.UserDetailsImpl;
 
@@ -44,15 +45,20 @@ public class CodeController {
   }
 
   @PostMapping
-  public ResponseEntity<CommonResponse<Code>> createCode(@Valid @RequestBody Code code) {
-    Code createdCode = service.saveCode(code);
+  public ResponseEntity<CommonResponse<Code>> createCode(@Valid @RequestBody SaveCodeRequest request,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    Code createdCode = service.saveCode(request, userDetails);
     CommonResponse<Code> response = new CommonResponse<>(createdCode);
     return ResponseEntity.ok(response);
   }
 
   @PutMapping
-  public ResponseEntity<CommonResponse<Code>> updateCode(@Valid @RequestBody Code code) {
-    Code createdCode = service.saveCode(code);
+  public ResponseEntity<CommonResponse<Code>> updateCode(@Valid @RequestBody SaveCodeRequest request,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    if (request.getId() == null || request.getId().isBlank()) {
+      throw new IllegalArgumentException("Code with an Id must be provided for update");
+    }
+    Code createdCode = service.saveCode(request, userDetails);
     CommonResponse<Code> response = new CommonResponse<>(createdCode);
     return ResponseEntity.ok(response);
   }
