@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.codeboxes.server.DTOs.CommonResponse;
@@ -40,6 +41,17 @@ public class JwtFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     try {
+
+      // Short circuit for public endpoints
+      AntPathMatcher pathMatcher = new AntPathMatcher();
+      String path = request.getRequestURI();
+      for (String publicEndpoint : SecurityConstraints.PUBLIC_ENDPOINTS) {
+        if (pathMatcher.match(publicEndpoint, path)) {
+          filterChain.doFilter(request, response);
+          return;
+        }
+      }
+
       // extract the JWT token from the Authorization header
       String authHeader = request.getHeader("Authorization");
       String token = null;
@@ -47,6 +59,8 @@ public class JwtFilter extends OncePerRequestFilter {
       if (authHeader != null && authHeader.startsWith("Bearer ")) {
         token = authHeader.substring(7);
         username = jwtService.extractUsername(token);
+      } else {
+        throw new JwtException("Authorization header is missing or does not start with Bearer");
       }
 
       // If a valid username is found and unauthenticated
