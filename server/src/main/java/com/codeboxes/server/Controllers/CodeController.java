@@ -36,6 +36,13 @@ public class CodeController {
     return ResponseEntity.ok(response);
   }
 
+  @GetMapping("/{codeId}")
+  public ResponseEntity<CommonResponse<Code>> getCodeById(@PathVariable String codeId) {
+    Code code = service.getCodeById(codeId);
+    CommonResponse<Code> response = new CommonResponse<>(code);
+    return ResponseEntity.ok(response);
+  }
+
   @PostMapping
   public ResponseEntity<CommonResponse<Code>> createCode(@Valid @RequestBody Code code) {
     Code createdCode = service.saveCode(code);

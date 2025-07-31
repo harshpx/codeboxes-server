@@ -34,7 +34,8 @@ public class CodeService {
   }
 
   public Code getCodeById(String code) {
-    return codeRepository.findById(code).orElseThrow(() -> new RuntimeException("Code not found with id: " + code));
+    return codeRepository.findById(code)
+        .orElseThrow(() -> new EntityNotFoundException("Code not found"));
   }
 
   @Transactional
