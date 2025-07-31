@@ -2,6 +2,7 @@ package com.codeboxes.server.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,6 +19,7 @@ import com.codeboxes.server.DTOs.Auth.LoginUserRequest;
 import com.codeboxes.server.DTOs.Auth.RegisterUserRequest;
 import com.codeboxes.server.DTOs.Auth.PatchUserRequest;
 import com.codeboxes.server.Services.UserService;
+import com.codeboxes.server.Services.SecurityConfigServices.UserDetailsImpl;
 
 import jakarta.validation.Valid;
 
@@ -27,7 +29,7 @@ public class UserController {
   @Autowired
   private UserService service;
 
-  // Open endpoint
+  // ---------------------- Public Endpoints ----------------------
   @PostMapping("/register")
   public ResponseEntity<CommonResponse<AuthenticatedUserResponse>> registerUser(
       @Valid @RequestBody RegisterUserRequest request) {
@@ -35,7 +37,6 @@ public class UserController {
     return ResponseEntity.ok(new CommonResponse<>(response));
   }
 
-  // Open endpoint
   @PostMapping("/login")
   public ResponseEntity<CommonResponse<AuthenticatedUserResponse>> loginUser(
       @Valid @RequestBody LoginUserRequest request) {
@@ -43,7 +44,6 @@ public class UserController {
     return ResponseEntity.ok(new CommonResponse<>(response));
   }
 
-  // Open endpoint
   @GetMapping("/check-availability")
   public ResponseEntity<CommonResponse<Boolean>> checkUsernameAvailability(
       @RequestParam(required = false) String username, @RequestParam(required = false) String email) {
@@ -60,9 +60,11 @@ public class UserController {
     throw new IllegalArgumentException("Either username or email must be provided");
   }
 
-  @GetMapping("/{token}")
-  public ResponseEntity<CommonResponse<AuthenticatedUserResponse>> getAuthenticatedUser(@PathVariable String token) {
-    AuthenticatedUserResponse response = service.getUserFromToken(token);
+  // ---------------------- Authorized Endpoints ----------------------
+  @GetMapping
+  public ResponseEntity<CommonResponse<AuthenticatedUserResponse>> getAuthorizedUser(
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    AuthenticatedUserResponse response = service.getAuthorizedUser(userDetails);
     return ResponseEntity.ok(new CommonResponse<>(response));
   }
 

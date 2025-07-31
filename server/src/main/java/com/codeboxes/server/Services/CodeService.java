@@ -9,8 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.codeboxes.server.Collections.Code;
 import com.codeboxes.server.Collections.User;
+import com.codeboxes.server.Exceptions.EntityNotFoundException;
 import com.codeboxes.server.Repositories.CodeRepository;
 import com.codeboxes.server.Repositories.UserRepository;
+import com.codeboxes.server.Services.SecurityConfigServices.UserDetailsImpl;
 
 @Service
 public class CodeService {
@@ -24,8 +26,11 @@ public class CodeService {
     return codeRepository.findAll();
   }
 
-  public List<Code> getCodesByUser(String userId) {
-    return codeRepository.findByCreatedBy(userId);
+  public List<Code> getCodesByUser(UserDetailsImpl userDetails) {
+    String userId = userDetails.getUser().getId();
+    User authorizedUser = userRepository.findById(userId)
+        .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    return codeRepository.findByCreatedBy(authorizedUser.getId());
   }
 
   public Code getCodeById(String code) {

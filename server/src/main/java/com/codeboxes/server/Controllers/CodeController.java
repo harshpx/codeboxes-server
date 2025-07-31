@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codeboxes.server.Collections.Code;
 import com.codeboxes.server.DTOs.CommonResponse;
 import com.codeboxes.server.Services.CodeService;
+import com.codeboxes.server.Services.SecurityConfigServices.UserDetailsImpl;
 
 import jakarta.validation.Valid;
 
@@ -25,9 +27,10 @@ public class CodeController {
   @Autowired
   private CodeService service;
 
-  @GetMapping("/user/{userId}")
-  public ResponseEntity<CommonResponse<List<Code>>> getCodesByUser(@PathVariable String userId) {
-    List<Code> codes = service.getCodesByUser(userId);
+  @GetMapping
+  public ResponseEntity<CommonResponse<List<Code>>> getCodesByUser(
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    List<Code> codes = service.getCodesByUser(userDetails);
     CommonResponse<List<Code>> response = new CommonResponse<>(codes);
     return ResponseEntity.ok(response);
   }

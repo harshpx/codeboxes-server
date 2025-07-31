@@ -61,8 +61,7 @@ public class UserService {
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     User authenticatedUser = userDetails.getUser();
     String jwtToken = jwtService.generateToken(authenticatedUser);
-    return new AuthenticatedUserResponse(authenticatedUser.getId(), authenticatedUser.getUsername(),
-        authenticatedUser.getEmail(), jwtToken);
+    return new AuthenticatedUserResponse(authenticatedUser, jwtToken);
   }
 
   @Transactional
@@ -82,8 +81,7 @@ public class UserService {
       existingUser.setPassword(hashedPassward);
     }
     repository.save(existingUser);
-    return new AuthenticatedUserResponse(existingUser.getId(), existingUser.getUsername(), existingUser.getEmail(),
-        jwtService.generateToken(existingUser));
+    return new AuthenticatedUserResponse(existingUser, jwtService.generateToken(existingUser));
   }
 
   @Transactional
@@ -104,15 +102,11 @@ public class UserService {
     return user.isEmpty();
   }
 
-  public AuthenticatedUserResponse getUserFromToken(String token) {
-    String username = jwtService.extractUsername(token);
-    Optional<User> user = repository.findByUsername(username);
-    if (user.isPresent()) {
-      User foundUser = user.get();
-      return new AuthenticatedUserResponse(foundUser.getId(), foundUser.getUsername(), foundUser.getEmail(),
-          jwtService.generateToken(foundUser));
-    } else {
-      throw new EntityNotFoundException("User not found with username: " + username);
-    }
+  public AuthenticatedUserResponse getAuthorizedUser(UserDetailsImpl userDetails) {
+    String authorizedUserId = userDetails.getUser().getId();
+    User authorizedUser = repository.findById(authorizedUserId)
+        .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    String token = jwtService.generateToken(authorizedUser);
+    return new AuthenticatedUserResponse(authorizedUser, token);
   }
 }

@@ -22,6 +22,7 @@ public class Code {
   private String createdBy;
 
   @NotNull
+  @NotBlank
   private String title;
 
   @NotNull
