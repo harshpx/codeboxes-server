@@ -17,25 +17,7 @@ Deployed API url: [https://codeboxes.152.42.158.94.nip.io](https://codeboxes.152
 * Golang
 
 ## API Documentation
-```
-POST: /api/v1/execute
-Payload:
-{
-  "code": "function main() {\n    let str = readline();\n    console.log(\"Input string: \" + str);\n}\n    \nmain();",
-  "language": "js",
-  "input": "temp string input"
-}
-Response:
-{
-    "status": 200,
-    "timeStamp": 1753405366504,
-    "success": true,
-    "response": {
-        "output": "Input string: temp string input\n",
-        "error": false
-    }
-}
-```
+[https://codeboxes.152.42.158.94.nip.io/swagger-ui.html](https://codeboxes.152.42.158.94.nip.io/swagger-ui.html)
 
 ## To run locally
 * **Linux / MacOS**
