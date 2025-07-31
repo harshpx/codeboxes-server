@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -79,6 +80,12 @@ public class JwtFilter extends OncePerRequestFilter {
         }
       }
       filterChain.doFilter(request, response);
+    } catch (UsernameNotFoundException e) {
+      CommonResponse<String> errorResponse = new CommonResponse<>(e.getLocalizedMessage(),
+          HttpStatus.NOT_FOUND.value());
+      response.setStatus(HttpStatus.NOT_FOUND.value());
+      response.setContentType("application/json");
+      response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     } catch (JwtException e) {
       CommonResponse<String> errorResponse = new CommonResponse<>(e.getLocalizedMessage(),
           HttpStatus.UNAUTHORIZED.value());

@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     if (user.isPresent()) {
       return new UserDetailsImpl(user.get());
     } else {
-      throw new UsernameNotFoundException("User not found with identifier: " + identifier);
+      throw new UsernameNotFoundException("User not found with the given identifier");
     }
   }
 }
