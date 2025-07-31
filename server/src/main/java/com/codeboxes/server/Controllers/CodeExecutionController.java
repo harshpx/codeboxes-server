@@ -22,6 +22,7 @@ public class CodeExecutionController {
   @Autowired
   private CodeExecutionService codeExecutionService;
 
+  // ---------------------- Public Endpoints ----------------------
   @PostMapping
   public ResponseEntity<CommonResponse<CodeExecutionResponse>> executeCode(
       @Valid @RequestBody CodeExecutionRequest request)

@@ -18,6 +18,7 @@ import com.codeboxes.server.Services.SecurityConfigServices.UserDetailsServiceIm
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -64,7 +65,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
       }
       filterChain.doFilter(request, response);
-    } catch (ExpiredJwtException e) {
+    } catch (JwtException e) {
       CommonResponse<String> errorResponse = new CommonResponse<>(e.getLocalizedMessage(),
           HttpStatus.UNAUTHORIZED.value());
       response.setStatus(HttpStatus.UNAUTHORIZED.value());

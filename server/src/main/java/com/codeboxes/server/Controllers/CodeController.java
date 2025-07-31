@@ -27,6 +27,7 @@ public class CodeController {
   @Autowired
   private CodeService service;
 
+  // ---------------------- Authorized Endpoints ----------------------
   @GetMapping
   public ResponseEntity<CommonResponse<List<Code>>> getCodesByUser(
       @AuthenticationPrincipal UserDetailsImpl userDetails) {

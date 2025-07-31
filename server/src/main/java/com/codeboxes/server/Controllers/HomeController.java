@@ -8,6 +8,7 @@ import com.codeboxes.server.DTOs.CommonResponse;
 
 @RestController
 public class HomeController {
+  // ---------------------- Public Endpoints ----------------------
   @GetMapping("/")
   public ResponseEntity<CommonResponse<String>> home() {
     CommonResponse<String> response = new CommonResponse<>("Codeboxes API is running!");

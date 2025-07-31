@@ -65,10 +65,11 @@ public class UserService {
   }
 
   @Transactional
-  public AuthenticatedUserResponse patchUpdateUser(PatchUserRequest request, String userId) {
-    User existingUser = repository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+  public AuthenticatedUserResponse patchUpdateUser(PatchUserRequest request, UserDetailsImpl userDetails) {
+    String userId = userDetails.getUser().getId();
+    User existingUser = repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
     if (request.getUsername() == null && request.getEmail() == null && request.getPassword() == null) {
-      throw new RuntimeException("No fields to update provided");
+      throw new IllegalArgumentException("No fields to update provided");
     }
     if (request.getUsername() != null) {
       existingUser.setUsername(request.getUsername());
@@ -85,7 +86,8 @@ public class UserService {
   }
 
   @Transactional
-  public void deleteUser(String userId) {
+  public void deleteUser(UserDetailsImpl userDetails) {
+    String userId = userDetails.getUser().getId();
     User existingUser = repository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
     List<Code> codesByUser = codeRepository.findByCreatedBy(existingUser.getId());
     codeRepository.deleteAll(codesByUser);

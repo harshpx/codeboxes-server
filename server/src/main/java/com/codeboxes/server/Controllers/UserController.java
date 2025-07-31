@@ -6,7 +6,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,18 +67,18 @@ public class UserController {
     return ResponseEntity.ok(new CommonResponse<>(response));
   }
 
-  @PatchMapping("/{userId}")
+  @PatchMapping
   public ResponseEntity<CommonResponse<AuthenticatedUserResponse>> patchUpdateUser(
       @RequestBody PatchUserRequest request,
-      @PathVariable String userId) {
-    AuthenticatedUserResponse rawdata = service.patchUpdateUser(request, userId);
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    AuthenticatedUserResponse rawdata = service.patchUpdateUser(request, userDetails);
     CommonResponse<AuthenticatedUserResponse> response = new CommonResponse<>(rawdata);
     return ResponseEntity.ok(response);
   }
 
-  @DeleteMapping("/{userId}")
-  public ResponseEntity<CommonResponse<String>> deleteUser(@PathVariable String userId) {
-    service.deleteUser(userId);
+  @DeleteMapping
+  public ResponseEntity<CommonResponse<String>> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    service.deleteUser(userDetails);
     CommonResponse<String> response = new CommonResponse<>("User deleted successfully");
     return ResponseEntity.ok(response);
   }
