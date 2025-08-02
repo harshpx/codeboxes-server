@@ -47,6 +47,7 @@ public class CodeController {
   @PostMapping
   public ResponseEntity<CommonResponse<Code>> createCode(@Valid @RequestBody SaveCodeRequest request,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    request.setId(null);
     Code createdCode = service.saveCode(request, userDetails);
     CommonResponse<Code> response = new CommonResponse<>(createdCode);
     return ResponseEntity.ok(response);

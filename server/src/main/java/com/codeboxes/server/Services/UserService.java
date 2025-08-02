@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -111,7 +112,7 @@ public class UserService {
   public AuthenticatedUserResponse getAuthorizedUser(UserDetailsImpl userDetails) {
     String authorizedUserId = userDetails.getUser().getId();
     User authorizedUser = repository.findById(authorizedUserId)
-        .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        .orElseThrow(() -> new BadCredentialsException("User not found"));
     String token = jwtService.generateToken(authorizedUser);
     return new AuthenticatedUserResponse(authorizedUser, token);
   }
