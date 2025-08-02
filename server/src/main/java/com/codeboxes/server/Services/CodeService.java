@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +31,7 @@ public class CodeService {
   public List<Code> getCodesByUser(UserDetailsImpl userDetails) {
     String userId = userDetails.getUser().getId();
     User authorizedUser = userRepository.findById(userId)
-        .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        .orElseThrow(() -> new BadCredentialsException("User not found"));
     return codeRepository.findByCreatedBy(authorizedUser.getId());
   }
 
@@ -47,7 +48,7 @@ public class CodeService {
       Code code = new Code(user.get().getId(), request);
       return codeRepository.save(code);
     } else {
-      throw new RuntimeException("User not found");
+      throw new BadCredentialsException("User not found");
     }
   }
 
