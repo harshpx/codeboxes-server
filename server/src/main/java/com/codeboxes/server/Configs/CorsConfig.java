@@ -13,7 +13,7 @@ public class CorsConfig {
       @Override
       public void addCorsMappings(@SuppressWarnings("null") CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("https://www.codeboxes.in", "http://localhost:3000")
+            .allowedOrigins("https://www.codeboxes.in", "https://codeboxes.vercel.app", "http://localhost:3000")
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
             .allowedHeaders("*")
             .allowCredentials(true);
