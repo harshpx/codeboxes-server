@@ -18,7 +18,6 @@ import com.codeboxes.server.DTOs.Auth.AuthenticatedUserResponse;
 import com.codeboxes.server.DTOs.Auth.LoginUserRequest;
 import com.codeboxes.server.DTOs.Auth.PatchUserRequest;
 import com.codeboxes.server.DTOs.Auth.RegisterUserRequest;
-import com.codeboxes.server.Exceptions.EntityNotFoundException;
 import com.codeboxes.server.Repositories.CodeRepository;
 import com.codeboxes.server.Repositories.UserRepository;
 import com.codeboxes.server.Services.SecurityConfigServices.JwtService;
@@ -68,7 +67,7 @@ public class UserService {
   @Transactional
   public AuthenticatedUserResponse patchUpdateUser(PatchUserRequest request, UserDetailsImpl userDetails) {
     String userId = userDetails.getUser().getId();
-    User existingUser = repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+    User existingUser = repository.findById(userId).orElseThrow(() -> new BadCredentialsException("User not found"));
     if (request.getUsername() == null && request.getEmail() == null && request.getDp() == null
         && request.getPassword() == null) {
       throw new IllegalArgumentException("No fields to update provided");
