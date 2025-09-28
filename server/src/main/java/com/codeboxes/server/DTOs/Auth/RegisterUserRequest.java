@@ -19,4 +19,7 @@ public class RegisterUserRequest {
   @NotNull
   @NotBlank
   private String password;
+  @NotNull
+  @NotBlank
+  private String otp;
 }

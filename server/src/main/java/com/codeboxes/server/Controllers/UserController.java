@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codeboxes.server.DTOs.CommonResponse;
 import com.codeboxes.server.DTOs.Auth.AuthenticatedUserResponse;
 import com.codeboxes.server.DTOs.Auth.LoginUserRequest;
+import com.codeboxes.server.DTOs.Auth.OTPRequest;
 import com.codeboxes.server.DTOs.Auth.RegisterUserRequest;
 import com.codeboxes.server.DTOs.Auth.PatchUserRequest;
 import com.codeboxes.server.Services.UserService;
 import com.codeboxes.server.Services.SecurityConfigServices.UserDetailsImpl;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
 @RestController
@@ -29,6 +31,13 @@ public class UserController {
   private UserService service;
 
   // ---------------------- Public Endpoints ----------------------
+  @PostMapping("/otp")
+  public ResponseEntity<CommonResponse<String>> sendOTP(@Valid @RequestBody OTPRequest request)
+      throws MessagingException {
+    service.sendOTP(request);
+    return ResponseEntity.ok(new CommonResponse<>("OTP sent successfully"));
+  }
+
   @PostMapping("/register")
   public ResponseEntity<CommonResponse<AuthenticatedUserResponse>> registerUser(
       @Valid @RequestBody RegisterUserRequest request) {

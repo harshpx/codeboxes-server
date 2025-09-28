@@ -16,12 +16,15 @@ import com.codeboxes.server.Collections.User;
 import com.codeboxes.server.Collections.Code;
 import com.codeboxes.server.DTOs.Auth.AuthenticatedUserResponse;
 import com.codeboxes.server.DTOs.Auth.LoginUserRequest;
+import com.codeboxes.server.DTOs.Auth.OTPRequest;
 import com.codeboxes.server.DTOs.Auth.PatchUserRequest;
 import com.codeboxes.server.DTOs.Auth.RegisterUserRequest;
 import com.codeboxes.server.Repositories.CodeRepository;
 import com.codeboxes.server.Repositories.UserRepository;
 import com.codeboxes.server.Services.SecurityConfigServices.JwtService;
 import com.codeboxes.server.Services.SecurityConfigServices.UserDetailsImpl;
+
+import jakarta.mail.MessagingException;
 
 @Service
 public class UserService {
@@ -37,11 +40,22 @@ public class UserService {
   @Autowired
   private JwtService jwtService;
 
+  @Autowired
+  private OTPService otpService;
+
+  public void sendOTP(OTPRequest request) throws MessagingException {
+    String email = request.getEmail();
+    otpService.sendOTP(email);
+  }
+
   @Transactional
   public AuthenticatedUserResponse registerUser(RegisterUserRequest request) {
     String username = request.getUsername();
     String email = request.getEmail();
     String hashedPassword = new BCryptPasswordEncoder(10).encode(request.getPassword());
+    if (!otpService.verifyOTP(email, request.getOtp())) {
+      throw new BadCredentialsException("Invalid OTP provided");
+    }
     User newUser = new User(username, email, hashedPassword);
     repository.save(newUser);
     return this.authenticateUser(new LoginUserRequest(username, request.getPassword()));
