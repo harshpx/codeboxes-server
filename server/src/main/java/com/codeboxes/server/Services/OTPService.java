@@ -3,7 +3,6 @@ package com.codeboxes.server.Services;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,9 +18,6 @@ public class OTPService {
 
   @Autowired
   private JavaMailSender mailSender;
-
-  @Value("${spring.mail.username}")
-  private String hostEmail;
 
   public void sendOTP(String email) throws MessagingException {
     String otp = String.valueOf((int) (Math.random() * 900000) + 100000); // Generate a 6-digit OTP
@@ -41,16 +37,32 @@ public class OTPService {
 
   private void emailOTP(String email, String otp) throws MessagingException {
     MimeMessage mimeMessage = mailSender.createMimeMessage();
-    MimeMessageHelper template = new MimeMessageHelper(mimeMessage, "utf-8");
-    String htmlMsg = "<p style=\"font-size:16px;\">Your one-time password for Codeboxes Email Verification is: <b style=\"color:#06b6d4\">"
-        + otp
-        + "</b></p>"
+    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true = multipart
+
+    // HTML version
+    String htmlMsg = "<html>"
+        + "<body style='font-family:Arial,sans-serif;'>"
+        + "<p style='font-size:16px;'>Your one-time password for Codeboxes Email Verification is: "
+        + "<b style='color:#06b6d4;'>" + otp + "</b></p>"
         + "<p>It is valid for 10 minutes.</p>"
-        + "<br/><p style=\"line-height:8px;\">Regards,</p><p style=\"line-height:8px;\">Harsh Priye (Codeboxes Team)</p>";
-    template.setText(htmlMsg, true);
-    template.setTo(email);
-    template.setSubject("Codeboxes Email Verification (Do Not Reply)");
-    template.setFrom(hostEmail);
+        + "<br/>"
+        + "<p style='line-height:10px;'><i>Regards,</i></p>"
+        + "<p style='line-height:10px;'><i>Harsh Priye (Codeboxes Team)</i></p>"
+        + "</body>"
+        + "</html>";
+
+    // Plain text version (fallback for clients that don't render HTML)
+    String textMsg = "Your one-time password for Codeboxes Email Verification is: " + otp + "\n"
+        + "It is valid for 10 minutes.\n\n"
+        + "Regards,\nCodeboxes Team";
+
+    helper.setText(textMsg, htmlMsg); // first param = plain text, second = HTML
+    helper.setTo(email);
+    helper.setSubject("Codeboxes Email Verification (Do Not Reply)");
+    helper.setFrom("onboarding@codeboxes.in");
+    helper.setReplyTo("no-reply@codeboxes.in");
+
     mailSender.send(mimeMessage);
   }
+
 }
