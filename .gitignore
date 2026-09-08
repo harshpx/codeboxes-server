@@ -1,2 +1,4 @@
-### VS Code ###
+.DS_Store
 .vscode/
+.env
+*.env
