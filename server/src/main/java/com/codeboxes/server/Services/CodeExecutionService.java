@@ -127,7 +127,7 @@ public class CodeExecutionService {
                               .addNewContainer()
                                 .withName("code-runner")
                                 .withImage("ghcr.io/harshpx/code-runner:latest")
-                                .withImagePullPolicy("Always")
+                                .withImagePullPolicy("IfNotPresent")
                                 .withEnv(
                                         new EnvVarBuilder().withName("LANGUAGE").withValue(language).build(),
                                         new EnvVarBuilder().withName("CODE_B64").withValue(encodedCode).build(),
