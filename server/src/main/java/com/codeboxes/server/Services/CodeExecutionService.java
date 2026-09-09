@@ -14,6 +14,7 @@ import io.fabric8.kubernetes.api.model.batch.v1.JobSpecBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import com.codeboxes.server.DTOs.CodeExecution.CodeExecutionRequest;
@@ -24,15 +25,22 @@ import com.codeboxes.server.DTOs.CodeExecution.CodeExecutionResponse;
 public class CodeExecutionService {
   private final String environment;
   private final KubernetesClient kubernetesClient;
+  private long start =  System.currentTimeMillis();
+
+
   public CodeExecutionService(@Value("${env}") String environment, KubernetesClient kubernetesClient) {
     this.environment = environment;
     this.kubernetesClient = kubernetesClient;
   }
+
   public CodeExecutionResponse executeCode(CodeExecutionRequest request) throws IOException, InterruptedException {
     // validate request
     if (request.getCode() == null || request.getLanguage() == null) {
       throw new RuntimeException("Invalid request: Check payload");
     }
+
+    this.start =  System.currentTimeMillis();
+    CodeExecutionResponse response;
 
     // encode code and input into base64
     String encodedCode = Base64.getEncoder().encodeToString(request.getCode().getBytes());
@@ -44,14 +52,21 @@ public class CodeExecutionService {
       log.info("codeExecution_in_DEV_env");
       // requires docker container (code-runner:latest)
       // execute code-runner docker container using Java ProcessBuilder
-      return executeDocker(language, encodedCode, encodedInput);
+      response = executeDocker(language, encodedCode, encodedInput);
     } else if (environment.equals("PROD")) {
       log.info("codeExecution_in_PROD_env");
       // requires kubernetes env with proper job configs
       // spawn short-lived jobs using kubernetes API
-      return executeKubernetes(language, encodedCode, encodedInput);
+      response = executeKubernetes(language, encodedCode, encodedInput);
+    } else {
+      long end = System.currentTimeMillis();
+      double duration = (end - start) / 1000.0;
+      throw new RuntimeException("unknown_environment_execution_stopped_after:" + duration + "s");
     }
-    return new CodeExecutionResponse("Environment not recognised", true);
+    long end = System.currentTimeMillis();
+    double duration = (end - start) / 1000.0;
+    log.info("codeExecution_process_completed_in:{}s", duration);
+    return response;
   }
 
   private CodeExecutionResponse executeDocker(String language, String encodedCode, String encodedInput) throws IOException, InterruptedException {
@@ -160,10 +175,7 @@ public class CodeExecutionService {
               .findFirst()
               .orElseThrow(() -> new RuntimeException("Runner pod not found"));
 
-      String logs = kubernetesClient.pods()
-              .inNamespace("default")
-              .withName(pod.getMetadata().getName())
-              .getLog();
+      String logs = getPodLogs(pod.getMetadata().getName());
 
       Job completedJob = kubernetesClient.batch()
               .v1()
@@ -190,11 +202,9 @@ public class CodeExecutionService {
   }
 
   private void waitForJob(String jobName) throws InterruptedException {
-
     long timeout = System.currentTimeMillis() + 15_000;
 
     while (System.currentTimeMillis() < timeout) {
-
       Job job = kubernetesClient.batch()
               .v1()
               .jobs()
@@ -219,7 +229,35 @@ public class CodeExecutionService {
 
       Thread.sleep(200);
     }
+    long end = System.currentTimeMillis();
+    long duration = (end - start) / 1000;
+    throw new RuntimeException("code_execution_timed_out_stopped_after:" + duration + " s");
+  }
 
-    throw new RuntimeException("Code execution timed out");
+  private String getPodLogs(String podName) throws InterruptedException {
+
+    long timeout = System.currentTimeMillis() + 5_000;
+
+    while (System.currentTimeMillis() < timeout) {
+      try {
+        String logs = kubernetesClient.pods()
+                .inNamespace("default")
+                .withName(podName)
+                .getLog();
+
+        if (logs != null) {
+          return logs;
+        }
+
+      } catch (Exception ignored) {
+        // Container may still be starting
+      }
+
+      Thread.sleep(200);
+    }
+
+    long end = System.currentTimeMillis();
+    long duration = (end - start) / 1000;
+    throw new RuntimeException("unable_to_retrieve_runner_logs_stopper_after:" + duration + " s");
   }
 }

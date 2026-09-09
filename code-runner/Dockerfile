@@ -53,8 +53,25 @@ RUN apk add --no-cache \
     libstdc++ \
     coreutils \
     ca-certificates
+
+RUN addgroup -S -g 1000 runner && \
+    adduser -S -u 1000 -G runner runner
+
 RUN rm -rf /var/cache/apk/* /usr/share/man /usr/share/doc /tmp/*
+
 WORKDIR /app
+
 COPY entrypoint.sh run-js.js run-py.py run-java.sh run-cpp.sh run-c.sh run-go.sh /app/
-RUN chmod +x /app/entrypoint.sh /app/run-js.js /app/run-py.py /app/run-java.sh /app/run-cpp.sh /app/run-c.sh /app/run-go.sh
+
+RUN chmod +x /app/entrypoint.sh \
+    /app/run-js.js  \
+    /app/run-py.py  \
+    /app/run-java.sh  \
+    /app/run-cpp.sh  \
+    /app/run-c.sh  \
+    /app/run-go.sh \
+    && chown -R runner:runner /app
+
+USER 1000
+
 ENTRYPOINT ["/app/entrypoint.sh"]
