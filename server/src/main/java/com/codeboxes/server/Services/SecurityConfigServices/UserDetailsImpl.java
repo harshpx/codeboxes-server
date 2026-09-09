@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.codeboxes.server.Collections.User;
 
 public class UserDetailsImpl implements UserDetails {
-  private User user;
+  private final User user;
 
   public UserDetailsImpl(User user) {
     this.user = user;

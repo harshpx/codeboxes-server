@@ -2,6 +2,7 @@ package com.codeboxes.server.Services;
 
 import java.util.concurrent.TimeUnit;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,12 +13,10 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 @Service
+@RequiredArgsConstructor
 public class OTPService {
-  @Autowired
-  private RedisTemplate<String, String> redisTemplate;
-
-  @Autowired
-  private JavaMailSender mailSender;
+  private final RedisTemplate<String, String> redisTemplate;
+  private final JavaMailSender mailSender;
 
   public void sendOTP(String email) throws MessagingException {
     String otp = String.valueOf((int) (Math.random() * 900000) + 100000); // Generate a 6-digit OTP

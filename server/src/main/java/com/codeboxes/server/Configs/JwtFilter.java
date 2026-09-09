@@ -2,6 +2,7 @@ package com.codeboxes.server.Configs;
 
 import java.io.IOException;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -27,15 +28,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-  @Autowired
-  private JwtService jwtService;
-
-  @Autowired
-  ApplicationContext context;
-
-  @Autowired
-  private ObjectMapper objectMapper;
+  private final JwtService jwtService;
+  private final ApplicationContext context;
+  private final ObjectMapper objectMapper;
 
   @SuppressWarnings("null")
   @Override

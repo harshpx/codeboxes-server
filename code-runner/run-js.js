@@ -18,4 +18,5 @@ try {
   if (result !== undefined) console.log(result);
 } catch (err) {
   console.error(err.toString());
+  process.exit(1);
 }

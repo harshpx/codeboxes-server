@@ -3,6 +3,7 @@ package com.codeboxes.server.Services;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,21 +28,13 @@ import com.codeboxes.server.Services.SecurityConfigServices.UserDetailsImpl;
 import jakarta.mail.MessagingException;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-  @Autowired
-  private UserRepository repository;
-
-  @Autowired
-  private CodeRepository codeRepository;
-
-  @Autowired
-  private AuthenticationManager authenticationManager;
-
-  @Autowired
-  private JwtService jwtService;
-
-  @Autowired
-  private OTPService otpService;
+  private final UserRepository repository;
+  private final CodeRepository codeRepository;
+  private final AuthenticationManager authenticationManager;
+  private final JwtService jwtService;
+  private final OTPService otpService;
 
   public void sendOTP(OTPRequest request) throws MessagingException {
     String email = request.getEmail();

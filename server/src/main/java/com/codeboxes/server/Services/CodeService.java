@@ -3,6 +3,7 @@ package com.codeboxes.server.Services;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -17,12 +18,10 @@ import com.codeboxes.server.Repositories.UserRepository;
 import com.codeboxes.server.Services.SecurityConfigServices.UserDetailsImpl;
 
 @Service
+@RequiredArgsConstructor
 public class CodeService {
-  @Autowired
-  private CodeRepository codeRepository;
-
-  @Autowired
-  private UserRepository userRepository;
+  private final CodeRepository codeRepository;
+  private final UserRepository userRepository;
 
   public List<Code> getAllCodes() {
     return codeRepository.findAll();

@@ -1,5 +1,6 @@
 package com.codeboxes.server.Controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,10 +26,10 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 public class UserController {
-  @Autowired
-  private UserService service;
+  private final UserService service;
 
   // ---------------------- Public Endpoints ----------------------
   @PostMapping("/otp")

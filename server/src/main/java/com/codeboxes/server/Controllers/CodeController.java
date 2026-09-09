@@ -2,6 +2,7 @@ package com.codeboxes.server.Controllers;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,10 +24,10 @@ import com.codeboxes.server.Services.SecurityConfigServices.UserDetailsImpl;
 import jakarta.validation.Valid;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/codes")
 public class CodeController {
-  @Autowired
-  private CodeService service;
+  private final CodeService service;
 
   // ---------------------- Authorized Endpoints ----------------------
   @GetMapping

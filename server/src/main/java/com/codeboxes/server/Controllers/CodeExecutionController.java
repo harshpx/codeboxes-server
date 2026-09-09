@@ -2,6 +2,7 @@ package com.codeboxes.server.Controllers;
 
 import java.io.IOException;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,10 +18,10 @@ import com.codeboxes.server.Services.CodeExecutionService;
 import jakarta.validation.Valid;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/execute")
 public class CodeExecutionController {
-  @Autowired
-  private CodeExecutionService codeExecutionService;
+  private final CodeExecutionService codeExecutionService;
 
   // ---------------------- Public Endpoints ----------------------
   @PostMapping
