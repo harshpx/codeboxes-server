@@ -12,6 +12,7 @@ import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
 import io.fabric8.kubernetes.api.model.batch.v1.JobSpecBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import com.codeboxes.server.DTOs.CodeExecution.CodeExecutionRequest;
 import com.codeboxes.server.DTOs.CodeExecution.CodeExecutionResponse;
 
 @Service
+@Slf4j
 public class CodeExecutionService {
   private final String environment;
   private final KubernetesClient kubernetesClient;
@@ -39,10 +41,12 @@ public class CodeExecutionService {
     String language = request.getLanguage();
 
     if (environment.equals("DEV")) {
+      log.info("codeExecution_in_DEV_env");
       // requires docker container (code-runner:latest)
       // execute code-runner docker container using Java ProcessBuilder
       return executeDocker(language, encodedCode, encodedInput);
     } else if (environment.equals("PROD")) {
+      log.info("codeExecution_in_PROD_env");
       // requires kubernetes env with proper job configs
       // spawn short-lived jobs using kubernetes API
       return executeKubernetes(language, encodedCode, encodedInput);
@@ -80,8 +84,10 @@ public class CodeExecutionService {
 
     // return response
     if (exitCode != 0 || !errorSb.isEmpty()) {
+      log.info("codeExecution_docker_image_execution_completed_with:FAILURE");
       return new CodeExecutionResponse(!errorSb.isEmpty() ? errorSb.toString() : outputSb.toString(), true);
     }
+    log.info("codeExecution_docker_image_execution_completed_with:SUCCESS");
     return new CodeExecutionResponse(outputSb.toString(), false);
   }
   private CodeExecutionResponse executeKubernetes(String language, String encodedCode, String encodedInput) throws InterruptedException {
@@ -168,6 +174,8 @@ public class CodeExecutionService {
 
       boolean failed = completedJob.getStatus().getSucceeded() == null ||
               completedJob.getStatus().getSucceeded() == 0;
+
+      log.info("codeExecution_kubernetes_job_execution_completed_with:{}", failed ? "FAILURE" : "SUCCESS");
 
       return new CodeExecutionResponse(logs, failed);
 
